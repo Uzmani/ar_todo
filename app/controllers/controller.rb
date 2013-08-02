@@ -5,9 +5,9 @@ class Controller
   class << self
 
     def run
-      command, input = validate(get_user_input)
-      if task_num
-        self.send(command, input)
+      command, desc_or_num = validate(get_user_input)
+      if desc_or_num
+        self.send(command, desc_or_num)
       else
         self.send(command)
       end
@@ -15,17 +15,15 @@ class Controller
 
     def list
       puts "Tasks:"
-      Task.all.with_index(1) do |task, index|
-        puts "#{index}. [#{task.status == :complete ? "X" : " "}] #{task.description}"
+      Task.all.each do |task|
+        puts "#{task.id}. [#{task.status == :complete ? "X" : " "}] #{task.description}"
       end
     end
 
+    def add(task)
     end
 
-    def add(input)
-    end
-
-    def delete(input)
+    def delete(task)
     end
 
     def complete(task_num)
@@ -36,16 +34,25 @@ class Controller
     end
 
     def validate(input)
-      puts "Invalid input" if input.length > 2
-      puts "Please use 'list', 'add', 'delete' or 'complete'" if input.length == 0
-      if input.length == 2
-        unless ['add', 'delete', 'complete'].include?(input[0])
-          puts "Invalid input"
-          exit
-        end
-        return input[0], input[1]
+      desc_or_num = nil
+      if input.length == 0
+        puts "Please use 'list', 'add', 'delete' or 'complete'" 
       end
-      return input[0], nil if ['list'].include?(input[0])
+      command = input[0]
+      desc_or_num = input[1..-1].join(" ") if input.length > 1  #rename
+      if ['add', 'delete', 'complete'].include?(command)
+        raise InvalidError, "Invalid input!  Tough luck." if desc_or_num == nil
+      elsif command == "list"
+        return command, nil
+      # if input.length == 2
+      #   unless 
+      #     puts "Invalid input"
+      #     exit
+      #   end
+      #   return input[0], input[1]
+      # end
+      # return input[0], nil if ['list'].include?(input[0])
+      end
     end
 
   end
