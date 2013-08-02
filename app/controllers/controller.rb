@@ -12,6 +12,7 @@ class Controller
         else
           self.send(command)
         end
+        puts
       rescue StandardError => e
         puts e.message
         puts
@@ -23,20 +24,17 @@ class Controller
       Task.all.each_with_index do |task, index|
         puts "#{((index + 1).to_s + ".").ljust(5)}[#{task.status == "complete" ? "X" : " "}] #{task.description}"
       end
-      puts
     end
 
     def add(task)
       Task.create({description: task, status: "incomplete"})
       puts "You've just created the following task: #{task}"
-      puts
     end
 
     def delete(task_num)
       raise "The list doesn't have a ##{task_num}, sorry." if task_num.to_i > Task.all.count
       task = Task.all[task_num.to_i - 1]
       puts "You've just destroyed the following task: #{task.description}  Lazy bum!!"
-      puts
       task.destroy
     end
 
@@ -45,7 +43,6 @@ class Controller
       task.status = "complete"
       task.save
       puts "You've just completed the following task: #{task.description}  Congrats!!"
-      puts
     end
 
     def validate(input)
