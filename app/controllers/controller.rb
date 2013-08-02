@@ -5,54 +5,57 @@ class Controller
   class << self
 
     def run
-      command, desc_or_num = validate(get_user_input)
-      if desc_or_num
-        self.send(command, desc_or_num)
-      else
-        self.send(command)
+      begin
+        command, desc_or_num = validate(ARGV)
+        if desc_or_num
+          self.send(command, desc_or_num)
+        else
+          self.send(command)
+        end
+      rescue StandardError => e
+        puts e.message
+        puts
       end
     end
 
     def list
       puts "Tasks:"
-      Task.all.each do |task|
-        puts "#{task.id}. [#{task.status == :complete ? "X" : " "}] #{task.description}"
+      Task.all.each_with_index do |task, index|
+        puts "#{((index + 1).to_s + ".").ljust(5)}[#{task.status == "complete" ? "X" : " "}] #{task.description}"
       end
+      puts
     end
 
     def add(task)
+      Task.create({description: task, status: "incomplete"})
+      puts "You've just created the following task: #{task}"
+      puts
     end
 
-    def delete(task)
+    def delete(task_num)
+      raise "The list doesn't have a ##{task_num}, sorry." if task_num.to_i > Task.all.count
+      task = Task.all[task_num.to_i - 1]
+      puts "You've just destroyed the following task: #{task.description}  Lazy bum!!"
+      puts
+      task.destroy
     end
 
     def complete(task_num)
-    end
-
-    def get_user_input
-      ARGV
+      task = Task.all[task_num.to_i - 1]
+      task.status = "complete"
+      task.save
+      puts "You've just completed the following task: #{task.description}  Congrats!!"
+      puts
     end
 
     def validate(input)
-      desc_or_num = nil
-      if input.length == 0
-        puts "Please use 'list', 'add', 'delete' or 'complete'" 
-      end
-      command = input[0]
+      raise "Please use 'list', 'add', 'delete' or 'complete'" if input.length == 0
+      command, desc_or_num = nil, nil
+      command = input[0] if input.length > 0
+      return command, nil if command == "list"
       desc_or_num = input[1..-1].join(" ") if input.length > 1  #rename
-      if ['add', 'delete', 'complete'].include?(command)
-        raise InvalidError, "Invalid input!  Tough luck." if desc_or_num == nil
-      elsif command == "list"
-        return command, nil
-      # if input.length == 2
-      #   unless 
-      #     puts "Invalid input"
-      #     exit
-      #   end
-      #   return input[0], input[1]
-      # end
-      # return input[0], nil if ['list'].include?(input[0])
-      end
+      return command, desc_or_num if ['add', 'delete', 'complete'].include?(command)
+      raise "Invalid input!  Tough luck."
     end
 
   end
