@@ -23,8 +23,7 @@ class Task < ActiveRecord::Base
 
     def complete(task_num)
       raise "The list doesn't have a ##{task_num}, sorry." if task_num.to_i > self.all.count || task_num.to_i < 1
-      task = self.all[task_num.to_i - 1]
-      task.status = "complete"
+      task, task.status = self.all[task_num.to_i - 1], "complete"
       task.save
       puts "You've just completed the following task: #{task.description}  Congrats!!"
     end
