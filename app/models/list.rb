@@ -23,9 +23,11 @@ class List < ActiveRecord::Base
       end
     end
 
-    def delete_list
-
-
+    def delete_list(list_number)
+      raise "We don't have a ##{list_number}, sorry." if list_number.to_i > self.all.count || list_number.to_i < 1
+      list = self.all[list_number.to_i - 1]
+      puts "You've just destroyed the following list: #{list.name}  Lazy bum!!"
+      list.destroy
     end
   end
 end

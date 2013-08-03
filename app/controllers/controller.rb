@@ -8,7 +8,7 @@ class Controller
     def run
       begin
         command, desc_or_num = validate(ARGV)
-        command.include?('_list') ? List.send(command, desc_or_num) : Task.send(command, desc_or_num)
+        command.include?('_list') ? List.send(command, desc_or_num) : Task.list_command(command, desc_or_num)
         puts
       rescue StandardError => e
         puts e.message
