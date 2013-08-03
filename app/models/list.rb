@@ -15,8 +15,12 @@ class List < ActiveRecord::Base
       end
     end
 
-    def select_list
-      
+    def select_list(list_number)
+      List.all.each_with_index do |list, index| 
+        list.active_list = list_number
+        list.save
+        Task.list(list_number.to_i, nil) if list_number.to_i == index + 1
+      end
     end
 
     def delete_list
