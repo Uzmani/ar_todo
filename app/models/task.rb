@@ -1,5 +1,7 @@
 class Task < ActiveRecord::Base
 
+  belongs_to :list
+
   class << self
 
     def list(desc_or_num)
@@ -28,5 +30,9 @@ class Task < ActiveRecord::Base
       puts "You've just completed the following task: #{task.description}  Congrats!!"
     end
   
+    def determine_list(p_1, p_2)
+      #database query to find active_list
+    end
+
   end
 end
